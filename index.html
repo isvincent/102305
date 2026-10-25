@@ -1,0 +1,854 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>法國秋季風暴</title>
+<meta name="description" content="2026 法國學生抗議與全國暴動事件：9:16 自動播放教學影片（語音旁白＋字幕＋動態視覺化）">
+<meta name="theme-color" content="#121419">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="法國風暴解說">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#121419; --ink2:#1a1d25; --ink3:#232733;
+  --paper:#f2ede4; --mute:rgba(242,237,228,.62); --faint:rgba(242,237,228,.14);
+  --rouge:#e8463b; --bleu:#3d6ad8; --ambre:#f3b33d;
+  --serif:"Noto Serif TC","Songti TC",serif;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --s:.3;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#07080b;overflow:hidden;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--sans);color:var(--paper);
+  background:radial-gradient(1200px 800px at 50% 40%,#1b1f2a 0%,#07080b 70%)}
+#stage{position:absolute;left:50%;top:50%;width:1080px;height:1920px;
+  transform:translate(-50%,-50%) scale(var(--s));transform-origin:50% 50%;
+  background:var(--ink);overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.6)}
+/* grain + vignette */
+#stage::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+#stage::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(130% 80% at 50% 35%,transparent 55%,rgba(0,0,0,.55) 100%)}
+
+/* ---------- slides ---------- */
+.slide{position:absolute;inset:0;visibility:hidden;opacity:0;z-index:2}
+.slide.active{visibility:visible;opacity:1}
+.slide.leave{visibility:visible;animation:leave .65s var(--ease) forwards;z-index:2}
+.slide.active[data-trans="rise"]{animation:enRise .9s var(--ease) both}
+.slide.active[data-trans="wipe"]{animation:enWipe 1s var(--ease) both}
+.slide.active[data-trans="iris"]{animation:enIris 1.1s var(--ease) both}
+.slide.active[data-trans="zoom"]{animation:enZoom 1s var(--ease) both}
+.slide.active[data-trans="push"]{animation:enPush .9s var(--ease) both}
+.slide.active[data-trans="blinds"]{animation:enBlinds 1s var(--ease) both}
+@keyframes leave{to{opacity:0;transform:scale(.94);filter:blur(6px)}}
+@keyframes enRise{from{opacity:0;transform:translateY(120px)}to{opacity:1;transform:none}}
+@keyframes enWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes enIris{from{clip-path:circle(0% at 50% 45%)}to{clip-path:circle(140% at 50% 45%)}}
+@keyframes enZoom{from{opacity:0;transform:scale(1.18);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
+@keyframes enPush{from{transform:translateX(100%)}to{transform:none}}
+@keyframes enBlinds{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0 0 0 0)}}
+
+.chap{position:absolute;top:118px;left:80px;right:80px;display:flex;align-items:center;gap:22px;
+  font:700 30px/1 var(--mono);letter-spacing:.08em;color:var(--mute)}
+.chap .no{color:var(--ink);background:var(--paper);padding:10px 16px;border-radius:6px}
+.chap .rule{flex:1;height:2px;background:var(--faint)}
+.ttl{position:absolute;top:196px;left:80px;right:80px;font:900 90px/1.18 var(--serif);
+  letter-spacing:.01em;text-wrap:balance}
+.ttl em{font-style:normal;color:var(--rouge)}
+.ghost{position:absolute;right:-30px;top:760px;font:700 560px/1 var(--mono);color:var(--paper);
+  opacity:.035;pointer-events:none;letter-spacing:-.06em}
+.vis{position:absolute;top:470px;left:0;right:0;height:990px}
+.abs{position:absolute}
+
+/* ---------- beat animation primitives ---------- */
+.bx{opacity:0;transform:translateY(46px);transition:opacity .7s var(--ease),transform .9s var(--ease)}
+.bx.in{opacity:1;transform:none}
+.bx.l{transform:translateX(-70px)} .bx.r{transform:translateX(70px)}
+.bx.pop{transform:scale(.6)}
+.bx.l.in,.bx.r.in,.bx.pop.in{transform:none}
+.fd{opacity:0;transition:opacity .9s var(--ease)} .fd.in{opacity:1}
+.gx{transform:scaleX(0);transform-origin:left center;transition:transform 1.3s var(--ease)} .gx.in{transform:scaleX(1)}
+svg .gy{transform:scaleY(0);transform-box:fill-box;transform-origin:center bottom;transition:transform 1.4s var(--ease)}
+svg .gy.in{transform:none}
+svg .sp{opacity:0;transform:scale(.3);transform-box:fill-box;transform-origin:center;transition:opacity .6s,transform .9s cubic-bezier(.3,1.6,.5,1)}
+svg .sp.in{opacity:1;transform:none}
+svg .draw{stroke-dasharray:1 1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s var(--ease)}
+svg .draw.in{stroke-dashoffset:0}
+svg .donut{stroke-dashoffset:.62;transition:stroke-dashoffset 1.6s var(--ease)} svg .donut.in{stroke-dashoffset:0}
+
+.fr{fill:#1f2430;stroke:rgba(242,237,228,.55);stroke-width:3;stroke-linejoin:round}
+.ripple{fill:none;stroke:var(--rouge);stroke-width:3;transform-box:fill-box;transform-origin:center;animation:ripple 3.2s ease-out infinite}
+.ripple.d2{animation-delay:1.06s}.ripple.d3{animation-delay:2.13s}
+@keyframes ripple{0%{transform:scale(.2);opacity:.9}100%{transform:scale(4.2);opacity:0}}
+.flame{transform-box:fill-box;transform-origin:center;animation:flick 1.3s ease-in-out infinite alternate}
+@keyframes flick{from{transform:scale(.85);opacity:.75}to{transform:scale(1.15);opacity:1}}
+.svgt{font-family:var(--sans);fill:var(--paper)}
+.svgm{font-family:var(--mono);fill:var(--paper)}
+
+/* ---------- S1 cover ---------- */
+.tri{position:absolute;top:118px;left:80px;display:flex;gap:10px}
+.tri i{display:block;width:70px;height:12px;border-radius:2px}
+.cover-k{position:absolute;top:170px;left:80px;font:700 32px/1.4 var(--mono);color:var(--mute);letter-spacing:.06em}
+.cover-h{position:absolute;left:76px;top:930px;font:900 176px/1.04 var(--serif);letter-spacing:-.01em}
+.cover-h span{color:var(--rouge)}
+.cover-s{position:absolute;left:80px;top:1318px;font:700 52px/1.3 var(--sans);color:var(--paper)}
+.cover-s small{display:block;margin-top:14px;font:500 34px/1.3 var(--mono);color:var(--mute)}
+
+/* ---------- cards ---------- */
+.card{background:var(--ink2);border:2px solid var(--faint);border-radius:28px;padding:40px 40px 36px}
+.kick{font:700 28px/1 var(--mono);letter-spacing:.1em;color:var(--mute)}
+.big{font:900 104px/1.05 var(--serif);margin:22px 0 16px}
+.lab{font:500 38px/1.35 var(--sans);color:var(--paper)}
+.grid2{position:absolute;left:70px;right:70px;top:10px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+.grid2 .card{height:450px;position:relative;overflow:hidden}
+.chip{display:inline-flex;align-items:center;gap:14px;padding:16px 26px;border-radius:999px;
+  border:2px solid var(--faint);font:700 36px/1 var(--sans);background:var(--ink2)}
+.chip b{font-family:var(--mono)}
+.dot{width:18px;height:18px;border-radius:50%;display:inline-block;flex:none}
+
+/* timeline */
+.tl{position:absolute;left:80px;right:80px;top:20px}
+.row{display:grid;grid-template-columns:200px 1fr;align-items:center;gap:28px;height:212px;border-bottom:2px solid var(--faint)}
+.row .d{font:700 60px/1 var(--mono);color:var(--paper)}
+.row .d small{display:block;font-size:26px;color:var(--mute);margin-top:12px;letter-spacing:.08em}
+.track{height:64px;border-radius:12px;background:rgba(242,237,228,.06);position:relative;overflow:hidden}
+.fill{position:absolute;inset:0;border-radius:12px;background:linear-gradient(90deg,var(--ambre),var(--rouge))}
+.rlab{margin-top:18px;font:700 38px/1.3 var(--sans)}
+.rlab .m{font-family:var(--mono);color:var(--ambre)}
+
+/* stat bars */
+.stat{position:absolute;left:80px;right:80px}
+.stat .hd{display:flex;justify-content:space-between;align-items:baseline}
+.stat .hd span{font:700 42px/1.2 var(--sans)}
+.stat .hd b{font:700 96px/1 var(--mono)}
+.stat .track{height:40px;margin-top:20px}
+
+/* balance */
+.cols{position:absolute;left:60px;right:60px;top:440px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.col h3{font:900 52px/1.2 var(--serif);margin-bottom:22px;display:flex;align-items:center;gap:16px}
+.li{font:500 36px/1.4 var(--sans);padding:22px 26px;border-radius:20px;background:var(--ink2);border:2px solid var(--faint);margin-bottom:18px}
+
+/* debate */
+.deb{position:absolute;left:60px;right:60px}
+.deb h3{font:900 50px/1.2 var(--serif);margin-bottom:20px}
+.deb h3 b{font-family:var(--mono);color:var(--ambre);margin-right:14px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.side{padding:26px 28px;border-radius:22px;font:500 34px/1.42 var(--sans);background:var(--ink2);border:2px solid var(--faint)}
+.side .who{display:block;font:700 28px/1 var(--mono);letter-spacing:.06em;margin-bottom:14px}
+
+/* questions */
+.q{position:absolute;left:70px;right:70px;display:grid;grid-template-columns:120px 1fr;gap:30px;align-items:center;
+  padding:40px 44px;border-radius:30px;background:var(--ink2);border:2px solid var(--faint)}
+.q .n{font:700 92px/1 var(--mono);color:var(--rouge)}
+.q p{font:700 46px/1.38 var(--sans);text-wrap:pretty}
+
+/* ---------- chrome: progress / caption / controls ---------- */
+#prog{position:absolute;z-index:5;top:58px;left:80px;right:80px;display:grid;gap:10px}
+#prog i{display:block;height:8px;border-radius:4px;background:var(--faint);overflow:hidden;position:relative}
+#prog i b{position:absolute;inset:0;background:var(--paper);transform-origin:left;transform:scaleX(0);transition:transform .5s var(--ease)}
+#cap{position:absolute;z-index:5;left:56px;right:56px;top:1488px;height:262px;border-radius:30px;
+  background:rgba(8,9,12,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:2px solid var(--faint);display:flex;align-items:center;justify-content:center;padding:26px 50px;transition:opacity .4s}
+#cap.off{opacity:0}
+#cap::before{content:"";position:absolute;left:0;top:44px;bottom:44px;width:8px;border-radius:0 6px 6px 0;background:var(--rouge)}
+#capText{font:700 56px/1.48 var(--sans);text-align:center;text-wrap:balance;opacity:0;transform:translateY(16px);
+  transition:opacity .35s var(--ease),transform .45s var(--ease)}
+#capText.show{opacity:1;transform:none}
+#ctrl{position:absolute;z-index:6;left:56px;right:56px;bottom:46px;height:112px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.btn{width:112px;height:112px;border-radius:50%;border:2px solid var(--faint);background:rgba(26,29,37,.85);color:var(--paper);
+  display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .2s,border-color .2s}
+.btn:hover{border-color:rgba(242,237,228,.4)}
+.btn:active{transform:scale(.92)}
+.btn:focus-visible{outline:4px solid var(--ambre);outline-offset:4px}
+.btn svg{width:46px;height:46px;fill:currentColor}
+.btn.main{width:150px;height:150px;background:var(--paper);color:var(--ink);border:none}
+.btn.main svg{width:62px;height:62px}
+.btn.offs{opacity:.42}
+#pageNo{font:700 32px/1 var(--mono);color:var(--mute);min-width:150px;text-align:center}
+
+/* overlays */
+.ov{position:absolute;inset:0;z-index:10;background:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;transition:opacity .6s,visibility .6s}
+.ov.gone{opacity:0;visibility:hidden}
+.ov h1{font:900 150px/1.08 var(--serif);text-align:center}
+.ov h1 span{color:var(--rouge)}
+.ov p{font:500 40px/1.5 var(--sans);color:var(--mute);text-align:center}
+.bigplay{width:300px;height:300px;border-radius:50%;border:none;background:var(--paper);color:var(--ink);display:grid;place-items:center;cursor:pointer;
+  box-shadow:0 0 0 0 rgba(232,70,59,.6);animation:halo 2.2s infinite}
+.bigplay svg{width:120px;height:120px;fill:currentColor;margin-left:16px}
+.bigplay:focus-visible{outline:6px solid var(--ambre);outline-offset:8px}
+@keyframes halo{0%{box-shadow:0 0 0 0 rgba(232,70,59,.55)}100%{box-shadow:0 0 0 70px rgba(232,70,59,0)}}
+.ov .mini{font:700 30px/1.5 var(--mono);color:var(--mute);letter-spacing:.06em}
+.ov .row2{display:flex;gap:28px}
+.pill{padding:28px 48px;border-radius:999px;border:2px solid var(--faint);background:var(--ink2);color:var(--paper);font:700 40px/1 var(--sans);cursor:pointer}
+.pill.pri{background:var(--paper);color:var(--ink);border:none}
+
+@media (prefers-reduced-motion:reduce){
+  .slide.active{animation:none!important}
+  .ripple,.flame,.bigplay{animation:none}
+}
+</style>
+</head>
+<body>
+<!-- shared SVG defs: simplified "l'Hexagone" outline (schematic, not to scale) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="fr" d="M330 40 L420 92 L520 166 L566 202 L546 330 L500 382 L522 442 L566 520 L482 560 L430 566 L360 546 L320 602 L220 590 L160 562 L192 430 L160 332 L56 262 L92 214 L190 222 L222 160 L282 112 Z"/>
+    <radialGradient id="heat"><stop offset="0" stop-color="#f3b33d"/><stop offset=".45" stop-color="#e8463b" stop-opacity=".8"/><stop offset="1" stop-color="#e8463b" stop-opacity="0"/></radialGradient>
+    <linearGradient id="streamA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3d6ad8"/><stop offset="1" stop-color="#e8463b"/></linearGradient>
+    <linearGradient id="streamB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3b33d"/><stop offset="1" stop-color="#e8463b"/></linearGradient>
+    <linearGradient id="streamC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2ede4"/><stop offset="1" stop-color="#e8463b"/></linearGradient>
+  </defs>
+</svg>
+
+<main id="stage" aria-label="法國秋季風暴 教學影片">
+  <div id="prog" aria-hidden="true"></div>
+
+  <!-- 01 COVER -->
+  <section class="slide" data-trans="iris" data-label="01 封面">
+    <div class="tri"><i style="background:var(--bleu)"></i><i style="background:var(--paper)"></i><i style="background:var(--rouge)"></i></div>
+    <div class="cover-k">國際時事解說 · 2026.10.25 更新</div>
+    <svg class="abs" style="left:0;top:220px" width="1080" height="720" viewBox="0 0 1080 720" aria-hidden="true">
+      <g transform="translate(232,40) scale(1.02)">
+        <use href="#fr" class="fr"/>
+        <g transform="translate(335,198)">
+          <circle r="40" class="ripple"/><circle r="40" class="ripple d2"/><circle r="40" class="ripple d3"/>
+          <circle r="16" fill="var(--rouge)"/>
+        </g>
+      </g>
+    </svg>
+    <h1 class="cover-h bx" data-b="0">法國<br><span>秋季風暴</span></h1>
+    <p class="cover-s bx" data-b="1">從高中封校，到全國暴動<small>2026.09 – 2026.10 · 12 頁</small></p>
+  </section>
+
+  <!-- 02 ORIGIN -->
+  <section class="slide" data-trans="wipe" data-label="02 起點">
+    <div class="ghost">02</div>
+    <header class="chap"><span class="no">02</span><span>起點</span><span class="rule"></span><span>CRÉTEIL</span></header>
+    <h2 class="ttl">一切從一所<br><em>高中</em>開始</h2>
+    <div class="vis">
+      <div class="abs bx" data-b="0" style="left:80px;top:0;font:700 128px/1 var(--mono);letter-spacing:-.02em">09.21</div>
+      <div class="abs bx" data-b="0" style="left:84px;top:142px;font:500 34px/1 var(--mono);color:var(--mute)">2026 · 星期一</div>
+      <svg class="abs" style="left:0;top:180px" width="1080" height="600" viewBox="0 0 1080 600" aria-hidden="true">
+        <g transform="translate(260,-20) scale(.98)">
+          <use href="#fr" class="fr"/>
+          <g class="sp" data-b="5">
+            <circle cx="300" cy="170" r="9" fill="var(--ambre)"/><circle cx="372" cy="176" r="9" fill="var(--ambre)"/>
+            <circle cx="318" cy="232" r="9" fill="var(--ambre)"/><circle cx="380" cy="230" r="9" fill="var(--ambre)"/>
+            <circle cx="292" cy="206" r="9" fill="var(--ambre)"/><circle cx="356" cy="150" r="9" fill="var(--ambre)"/>
+            <circle cx="402" cy="202" r="9" fill="var(--ambre)"/><circle cx="330" cy="140" r="9" fill="var(--ambre)"/>
+            <circle cx="276" cy="180" r="9" fill="var(--ambre)"/><circle cx="350" cy="252" r="9" fill="var(--ambre)"/>
+          </g>
+          <g transform="translate(342,206)">
+            <circle r="34" class="ripple"/><circle r="34" class="ripple d2"/>
+            <circle r="14" fill="var(--rouge)"/>
+          </g>
+        </g>
+        <g class="sp" data-b="1">
+          <line x1="600" y1="182" x2="790" y2="14" stroke="var(--paper)" stroke-width="3"/>
+          <circle cx="790" cy="14" r="7" fill="var(--paper)"/>
+        </g>
+      </svg>
+      <div class="abs card bx r" data-b="1" style="left:600px;right:60px;top:0;padding:28px 32px">
+        <div class="kick">巴黎東南郊 · 克雷泰伊</div>
+        <div style="font:900 44px/1.3 var(--serif);margin-top:14px">聖修伯里高中</div>
+        <div style="font:500 28px/1.3 var(--mono);color:var(--mute);margin-top:8px">Lycée Saint-Exupéry</div>
+      </div>
+      <div class="abs bx" data-b="3" style="left:80px;right:80px;top:820px;display:flex;gap:20px;flex-wrap:wrap">
+        <span class="chip"><span class="dot" style="background:var(--rouge)"></span>教師出缺</span>
+        <span class="chip"><span class="dot" style="background:var(--rouge)"></span>資源不足</span>
+        <span class="chip bx" data-b="5"><span class="dot" style="background:var(--ambre)"></span>周邊十餘校跟進</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 DEMANDS -->
+  <section class="slide" data-trans="rise" data-label="03 訴求">
+    <div class="ghost">03</div>
+    <header class="chap"><span class="no">03</span><span>學生訴求</span><span class="rule"></span><span>4 POINTS</span></header>
+    <h2 class="ttl">學生到底<br>在<em>抗議</em>什麼？</h2>
+    <div class="vis">
+      <div class="grid2">
+        <div class="card bx pop" data-b="1">
+          <div class="kick">01 · 人力不足</div>
+          <div class="big">7<span style="font-size:56px"> 個月</span></div>
+          <div class="lab">有學生整整沒有<br>法語老師</div>
+        </div>
+        <div class="card bx pop" data-b="3">
+          <div class="kick">02 · 班級過大</div>
+          <div class="big">32<span style="font-size:60px">–</span>36</div>
+          <div class="lab">一個班級的學生數</div>
+        </div>
+        <div class="card bx pop" data-b="4">
+          <div class="kick">03 · 校舍老舊</div>
+          <div style="display:flex;align-items:flex-end;gap:26px;margin-top:20px">
+            <svg width="70" height="240" viewBox="0 0 70 240" aria-hidden="true">
+              <rect x="20" y="0" width="30" height="200" rx="15" fill="rgba(242,237,228,.12)"/>
+              <circle cx="35" cy="208" r="30" fill="var(--rouge)"/>
+              <rect class="gy" data-b="4" x="26" y="30" width="18" height="176" rx="9" fill="var(--rouge)"/>
+            </svg>
+            <div><div class="big" style="margin:0">40°C</div><div class="lab" style="margin-top:10px">組合教室<br>夏季室溫</div></div>
+          </div>
+        </div>
+        <div class="card bx pop" data-b="5">
+          <div class="kick">04 · 升學壓力</div>
+          <div class="big" style="font-size:60px;margin:40px 0 30px">Parcoursup</div>
+          <div class="lab">大學申請平台<br>帶來沉重壓力</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 SPREAD -->
+  <section class="slide" data-trans="blinds" data-label="04 擴散">
+    <div class="ghost">04</div>
+    <header class="chap"><span class="no">04</span><span>擴散速度</span><span class="rule"></span><span>受影響高中數</span></header>
+    <h2 class="ttl">兩週內，<br>野火<em>燒遍全國</em></h2>
+    <div class="vis">
+      <div class="tl">
+        <div class="row bx" data-b="0"><div class="d">9/24<small>WEEK 1</small></div>
+          <div><div class="track"><div class="fill gx" data-b="0" style="right:auto;width:3%"></div></div><div class="rlab">約 <span class="m">10</span> 所高中封鎖</div></div></div>
+        <div class="row bx" data-b="1"><div class="d">9/29<small>WEEK 2</small></div>
+          <div><div class="track"><div class="fill gx" data-b="1" style="right:auto;width:39%"></div></div><div class="rlab">約 <span class="m">400</span> 所受干擾</div></div></div>
+        <div class="row bx" data-b="2"><div class="d">10/1<small>大學加入</small></div>
+          <div><div class="track"><div class="fill gx" data-b="3" style="right:auto;width:100%"></div></div>
+          <div class="rlab"><span class="m count" data-b="3" data-to="1027">0</span> 所受影響 <span class="bx" data-b="4" style="display:inline-block;color:var(--rouge)">· 1,949 人被捕</span></div></div></div>
+        <div class="row bx" data-b="5" style="border:none"><div class="d">10/6<small>全國動員</small></div>
+          <div><span class="chip" style="border-color:var(--rouge)"><span class="dot" style="background:var(--rouge)"></span>工會、教師加入 · 25–45 萬人</span>
+          <div class="rlab" style="font-size:30px;color:var(--mute);font-weight:500">政府估 25 萬 / 工會估 45 萬</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 CONVERGENCE -->
+  <section class="slide" data-trans="zoom" data-label="05 合流">
+    <div class="ghost">05</div>
+    <header class="chap"><span class="no">05</span><span>為何擴大</span><span class="rule"></span><span>3 STREAMS</span></header>
+    <h2 class="ttl">三股不滿<br>在同一天<em>匯流</em></h2>
+    <div class="vis">
+      <svg class="abs" style="left:0;top:0" width="1080" height="990" viewBox="0 0 1080 990" aria-hidden="true">
+        <path class="draw" data-b="0" pathLength="1" d="M180 210 C180 470 540 470 540 760" fill="none" stroke="url(#streamA)" stroke-width="18" stroke-linecap="round"/>
+        <path class="draw" data-b="2" pathLength="1" d="M540 210 L540 760" fill="none" stroke="url(#streamB)" stroke-width="18" stroke-linecap="round"/>
+        <path class="draw" data-b="4" pathLength="1" d="M900 210 C900 470 540 470 540 760" fill="none" stroke="url(#streamC)" stroke-width="18" stroke-linecap="round"/>
+        <g class="sp" data-b="0"><rect x="40" y="40" width="280" height="150" rx="24" fill="var(--ink2)" stroke="var(--bleu)" stroke-width="3"/>
+          <text x="180" y="105" text-anchor="middle" class="svgt" style="font:900 44px var(--serif)">教育資源</text>
+          <text x="180" y="158" text-anchor="middle" class="svgm" style="font-size:28px;fill:var(--mute)">學生 · 教師</text></g>
+        <g class="sp" data-b="2"><rect x="400" y="40" width="280" height="150" rx="24" fill="var(--ink2)" stroke="var(--ambre)" stroke-width="3"/>
+          <text x="540" y="105" text-anchor="middle" class="svgt" style="font:900 44px var(--serif)">物價油價</text>
+          <text x="540" y="158" text-anchor="middle" class="svgm" style="font-size:28px;fill:var(--mute)">黃背心重集結</text></g>
+        <g class="sp" data-b="4"><rect x="760" y="40" width="280" height="150" rx="24" fill="var(--ink2)" stroke="var(--paper)" stroke-width="3"/>
+          <text x="900" y="105" text-anchor="middle" class="svgt" style="font:900 44px var(--serif)">預算緊縮</text>
+          <text x="900" y="158" text-anchor="middle" class="svgm" style="font-size:28px;fill:var(--mute)">工會 · 公共服務</text></g>
+        <g class="sp" data-b="5">
+          <circle cx="540" cy="830" r="150" fill="url(#heat)" class="flame"/>
+          <circle cx="540" cy="830" r="112" fill="var(--rouge)"/>
+          <text x="540" y="828" text-anchor="middle" class="svgm" style="font-size:68px;font-weight:700">10.17</text>
+          <text x="540" y="880" text-anchor="middle" class="svgt" style="font-size:32px;font-weight:700">全國大動員</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <!-- 06 OCT 17 -->
+  <section class="slide" data-trans="iris" data-label="06 黑色星期六">
+    <div class="ghost">06</div>
+    <header class="chap"><span class="no">06</span><span>10 月 17 日</span><span class="rule"></span><span>SATURDAY</span></header>
+    <h2 class="ttl">和平遊行之外，<br><em>失控</em>的一夜</h2>
+    <div class="vis">
+      <div class="abs bx" data-b="0" style="left:80px;top:0">
+        <div style="font:700 150px/1 var(--mono);letter-spacing:-.03em" class="count" data-to="550000">0</div>
+        <div style="font:500 34px/1.4 var(--sans);color:var(--mute);margin-top:12px">內政部統計上街人數 <span class="bx" data-b="1" style="display:inline-block;color:var(--ambre)">｜主辦單位估 80 萬</span></div>
+      </div>
+      <svg class="abs" style="left:0;top:240px" width="1080" height="620" viewBox="0 0 1080 620" aria-hidden="true">
+        <g transform="translate(250,0) scale(.98)">
+          <use href="#fr" class="fr"/>
+          <g class="sp" data-b="2"><circle cx="336" cy="198" r="60" fill="url(#heat)" class="flame"/><circle cx="336" cy="198" r="14" fill="var(--ambre)"/></g>
+          <g class="sp" data-b="4"><circle cx="268" cy="392" r="54" fill="url(#heat)" class="flame"/><circle cx="268" cy="392" r="13" fill="var(--ambre)"/></g>
+          <g class="sp" data-b="5"><circle cx="446" cy="402" r="50" fill="url(#heat)" class="flame"/><circle cx="446" cy="402" r="13" fill="var(--ambre)"/></g>
+          <g class="sp" data-b="5"><circle cx="456" cy="548" r="38" fill="url(#heat)" class="flame"/><circle cx="456" cy="548" r="11" fill="var(--ambre)"/></g>
+        </g>
+        <g class="sp" data-b="2"><line x1="586" y1="194" x2="760" y2="120" stroke="var(--paper)" stroke-width="2.5"/>
+          <text x="770" y="112" class="svgt" style="font:900 40px var(--serif)">巴黎</text>
+          <text x="770" y="152" class="svgt" style="font-size:28px;fill:var(--mute)">共和廣場 縱火搶劫</text></g>
+        <g class="sp" data-b="4"><line x1="512" y1="384" x2="150" y2="300" stroke="var(--paper)" stroke-width="2.5"/>
+          <text x="40" y="262" class="svgt" style="font:900 40px var(--serif)">利摩日</text>
+          <text x="40" y="300" class="svgt" style="font-size:28px;fill:var(--mute)">市政廳焚毀</text></g>
+        <g class="sp" data-b="5"><line x1="694" y1="394" x2="830" y2="360" stroke="var(--paper)" stroke-width="2.5"/>
+          <text x="840" y="352" class="svgt" style="font:900 40px var(--serif)">里昂</text>
+          <text x="840" y="392" class="svgt" style="font-size:28px;fill:var(--mute)">旅遊局遭縱火</text></g>
+      </svg>
+      <div class="abs" style="left:80px;right:80px;top:880px;display:flex;gap:18px;flex-wrap:wrap">
+        <span class="chip bx" data-b="6"><span class="dot" style="background:var(--paper)"></span>示威者 1 人身亡</span>
+        <span class="chip bx" data-b="7"><span class="dot" style="background:var(--paper)"></span>南特員警 1 人殉職</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 NUMBERS -->
+  <section class="slide" data-trans="push" data-label="07 數字">
+    <div class="ghost">07</div>
+    <header class="chap"><span class="no">07</span><span>衝擊數據</span><span class="rule"></span><span>10/17 單日</span></header>
+    <h2 class="ttl">一天之內，<br>用<em>數字</em>看衝擊</h2>
+    <div class="vis">
+      <div class="stat bx" data-b="1" style="top:0"><div class="hd"><span>被捕人數</span><b class="count" data-to="2400" data-pre="≈">0</b></div>
+        <div class="track"><div class="fill gx" data-b="1" style="right:auto;width:80%"></div></div></div>
+      <div class="stat bx" data-b="2" style="top:200px"><div class="hd"><span>警察受傷</span><b class="count" data-to="1000" data-pre="≈">0</b></div>
+        <div class="track"><div class="fill gx" data-b="2" style="right:auto;width:33.3%;background:var(--bleu)"></div></div></div>
+      <div class="stat bx" data-b="3" style="top:400px"><div class="hd"><span>商店被毀或破壞</span><b class="count" data-to="1500">0</b></div>
+        <div class="track"><div class="fill gx" data-b="3" style="right:auto;width:50%;background:var(--ambre)"></div></div></div>
+      <div class="stat bx" data-b="4" style="top:600px"><div class="hd"><span>商店遭洗劫</span><b class="count" data-to="3000">0</b></div>
+        <div class="track"><div class="fill gx" data-b="4" style="right:auto;width:100%;background:var(--ambre)"></div></div></div>
+      <div class="abs card bx" data-b="5" style="left:80px;right:80px;top:810px;padding:26px 34px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font:700 34px/1.3 var(--sans)">截至 10/22 累計</span>
+        <span style="font:700 40px/1 var(--mono)"><span style="color:var(--ambre)">2,700</span> 被捕 · <span style="color:var(--rouge)">217</span> 入獄</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 GOVERNMENT -->
+  <section class="slide" data-trans="wipe" data-label="08 政府回應">
+    <div class="ghost">08</div>
+    <header class="chap"><span class="no">08</span><span>政府回應</span><span class="rule"></span><span>TWO TRACKS</span></header>
+    <h2 class="ttl">秩序與訴求，<br>政府的<em>兩手策略</em></h2>
+    <div class="vis">
+      <svg class="abs" style="left:0;top:0" width="1080" height="420" viewBox="0 0 1080 420" aria-hidden="true">
+        <path d="M540 120 L500 400 L580 400 Z" fill="var(--ink3)" stroke="var(--faint)" stroke-width="2"/>
+        <rect x="430" y="396" width="220" height="16" rx="8" fill="var(--ink3)"/>
+        <g class="beam" style="transform-box:view-box;transform-origin:540px 120px;transition:transform 1.4s var(--ease)">
+          <rect x="140" y="112" width="800" height="16" rx="8" fill="var(--paper)"/>
+          <circle cx="540" cy="120" r="22" fill="var(--paper)"/>
+          <line x1="190" y1="120" x2="150" y2="250" stroke="var(--mute)" stroke-width="3"/><line x1="190" y1="120" x2="230" y2="250" stroke="var(--mute)" stroke-width="3"/>
+          <line x1="890" y1="120" x2="850" y2="250" stroke="var(--mute)" stroke-width="3"/><line x1="890" y1="120" x2="930" y2="250" stroke="var(--mute)" stroke-width="3"/>
+          <path d="M110 250 H270 Q190 320 110 250Z" fill="var(--bleu)"/>
+          <path d="M810 250 H970 Q890 320 810 250Z" fill="var(--ambre)"/>
+        </g>
+      </svg>
+      <div class="cols">
+        <div class="col">
+          <h3 class="bx l" data-b="1"><span class="dot" style="background:var(--bleu);width:26px;height:26px"></span>維持秩序</h3>
+          <div class="li bx l" data-b="2">馬克宏全國談話<br>誓言追究破壞者</div>
+          <div class="li bx l" data-b="3">巴黎、馬賽局部宵禁<br>部分地區禁止集會</div>
+        </div>
+        <div class="col">
+          <h3 class="bx r" data-b="4"><span class="dot" style="background:var(--ambre);width:26px;height:26px"></span>回應訴求</h3>
+          <div class="li bx r" data-b="5">總理要求各部會<br>提出改善方案</div>
+          <div class="li bx r" data-b="6">派出 3,000 名<br>代課教師</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 CONTROVERSY -->
+  <section class="slide" data-trans="rise" data-label="09 爭議">
+    <div class="ghost">09</div>
+    <header class="chap"><span class="no">09</span><span>兩大爭議</span><span class="rule"></span><span>DEBATE</span></header>
+    <h2 class="ttl">各說各話的<br><em>兩大爭議</em></h2>
+    <div class="vis">
+      <div class="deb" style="top:0">
+        <h3 class="bx" data-b="1"><b>Q1</b>警方執法是否過當？</h3>
+        <div class="vs">
+          <div class="side bx l" data-b="2"><span class="who" style="color:var(--rouge)">人權團體</span>國際特赦組織、人權觀察批評過度用武，多名少年重傷</div>
+          <div class="side bx r" data-b="3"><span class="who" style="color:var(--bleu)">法國政府</span>內政部長：絕大多數情況應對適當，部分抗議已成暴動</div>
+        </div>
+      </div>
+      <div class="deb" style="top:440px">
+        <h3 class="bx" data-b="5"><b>Q2</b>誰在背後推動？</h3>
+        <div class="vs">
+          <div class="side bx l" data-b="6"><span class="who" style="color:var(--bleu)">政府說法</span>指控極左政黨「不屈法國」煽動</div>
+          <div class="side bx r" data-b="6"><span class="who" style="color:var(--rouge)">LFI 回應</span>否認，稱運動是自發的，批政府搞陰謀論</div>
+        </div>
+      </div>
+      <div class="abs bx" data-b="7" style="left:60px;right:60px;top:790px;display:flex;align-items:center;gap:34px">
+        <svg width="170" height="170" viewBox="0 0 42 42" aria-hidden="true" style="transform:rotate(-90deg)">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--faint)" stroke-width="6"/>
+          <circle class="donut" data-b="7" pathLength="1" cx="21" cy="21" r="15.9" fill="none" stroke="var(--ambre)" stroke-width="6" stroke-dasharray=".62 1"/>
+        </svg>
+        <div><div style="font:700 92px/1 var(--mono);color:var(--ambre)">62%</div>
+        <div style="font:500 34px/1.4 var(--sans);margin-top:10px">《費加洛報》民調：<br>認為學生運動有正當理由</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 OCT 24 -->
+  <section class="slide" data-trans="zoom" data-label="10 第二波">
+    <div class="ghost">10</div>
+    <header class="chap"><span class="no">10</span><span>10 月 24 日</span><span class="rule"></span><span>ACT II</span></header>
+    <h2 class="ttl">第二波遊行，<br>這次<em>大致和平</em></h2>
+    <div class="vis">
+      <span class="abs chip bx" data-b="1" style="left:80px;top:0;border-color:var(--bleu)"><span class="dot" style="background:var(--bleu)"></span>全國部署警力 <b>≈70,000</b></span>
+      <svg class="abs" style="left:0;top:120px" width="1080" height="760" viewBox="0 0 1080 760" aria-hidden="true">
+        <line x1="120" y1="660" x2="960" y2="660" stroke="var(--faint)" stroke-width="3"/>
+        <rect x="230" y="100" width="220" height="560" rx="14" fill="rgba(242,237,228,.22)"/>
+        <rect class="gy" data-b="2" x="630" y="242" width="220" height="418" rx="14" fill="var(--rouge)"/>
+        <text x="340" y="80" text-anchor="middle" class="svgm" style="font-size:56px;font-weight:700">55 萬</text>
+        <g class="sp" data-b="2"><text x="740" y="222" text-anchor="middle" class="svgm" style="font-size:56px;font-weight:700">41 萬</text></g>
+        <text x="340" y="718" text-anchor="middle" class="svgm" style="font-size:36px;fill:var(--mute)">10/17</text>
+        <text x="740" y="718" text-anchor="middle" class="svgm" style="font-size:36px;fill:var(--mute)">10/24</text>
+        <g class="sp" data-b="3"><rect x="660" y="520" width="160" height="110" rx="10" fill="rgba(0,0,0,.25)"/>
+          <text x="740" y="568" text-anchor="middle" class="svgt" style="font-size:30px;font-weight:700">巴黎</text>
+          <text x="740" y="610" text-anchor="middle" class="svgm" style="font-size:34px;font-weight:700">11 萬</text></g>
+        <g class="sp" data-b="5" transform="rotate(-10 820 120)">
+          <rect x="690" y="16" width="290" height="104" rx="12" fill="none" stroke="var(--ambre)" stroke-width="6"/>
+          <text x="835" y="86" text-anchor="middle" class="svgt" style="font:900 52px var(--serif);fill:var(--ambre)">大致和平</text></g>
+      </svg>
+      <div class="abs bx" data-b="4" style="left:80px;right:80px;top:890px;font:500 34px/1.4 var(--sans);color:var(--mute)">
+        內政部統計數字；工會 CGT 估計約為兩倍
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 EUROPE -->
+  <section class="slide" data-trans="blinds" data-label="11 歐洲">
+    <div class="ghost">11</div>
+    <header class="chap"><span class="no">11</span><span>外溢效應</span><span class="rule"></span><span>EUROPE</span></header>
+    <h2 class="ttl">學生運動<br><em>跨出國界</em></h2>
+    <div class="vis">
+      <svg class="abs" style="left:0;top:0" width="1080" height="820" viewBox="0 0 1080 820" aria-hidden="true">
+        <path class="draw" data-b="1" pathLength="1" d="M260 470 Q300 300 400 220" fill="none" stroke="var(--ambre)" stroke-width="5"/>
+        <path class="draw" data-b="2" pathLength="1" d="M260 470 Q450 470 610 560" fill="none" stroke="var(--ambre)" stroke-width="5"/>
+        <path class="draw" data-b="3" pathLength="1" d="M610 560 Q760 500 850 520" fill="none" stroke="var(--ambre)" stroke-width="5"/>
+        <path class="draw" data-b="3" pathLength="1" d="M610 560 Q760 640 900 700" fill="none" stroke="var(--ambre)" stroke-width="5"/>
+        <g class="sp" data-b="0"><circle cx="260" cy="470" r="120" fill="url(#heat)" class="flame"/><circle cx="260" cy="470" r="80" fill="var(--rouge)"/>
+          <text x="260" y="484" text-anchor="middle" class="svgt" style="font:900 46px var(--serif)">法國</text></g>
+        <g class="sp" data-b="1"><circle cx="400" cy="220" r="52" fill="var(--ink2)" stroke="var(--ambre)" stroke-width="4"/>
+          <text x="470" y="200" class="svgt" style="font:900 40px var(--serif)">比利時</text><text x="470" y="240" class="svgt" style="font-size:28px;fill:var(--mute)">列日學生封校</text></g>
+        <g class="sp" data-b="2"><circle cx="610" cy="560" r="56" fill="var(--ink2)" stroke="var(--ambre)" stroke-width="4"/>
+          <text x="540" y="660" class="svgt" style="font:900 40px var(--serif)">義大利</text><text x="540" y="700" class="svgt" style="font-size:28px;fill:var(--mute)">多城學生遊行</text></g>
+        <g class="sp" data-b="3"><circle cx="850" cy="520" r="40" fill="var(--ink2)" stroke="var(--ambre)" stroke-width="4"/>
+          <text x="760" y="440" class="svgt" style="font:900 36px var(--serif)">阿爾巴尼亞</text></g>
+        <g class="sp" data-b="3"><circle cx="900" cy="700" r="40" fill="var(--ink2)" stroke="var(--ambre)" stroke-width="4"/>
+          <text x="960" y="780" text-anchor="middle" class="svgt" style="font:900 36px var(--serif)">希臘</text></g>
+        <text x="1020" y="60" text-anchor="end" class="svgm" style="font-size:26px;fill:var(--mute)">示意圖 · 非實際地理比例</text>
+      </svg>
+      <div class="abs" style="left:80px;right:80px;top:850px;display:flex;gap:18px;flex-wrap:wrap">
+        <span class="chip bx" data-b="4">物價</span><span class="chip bx" data-b="4">教育</span><span class="chip bx" data-b="5" style="border-color:var(--rouge)">年輕人的未來</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 REFLECT -->
+  <section class="slide" data-trans="iris" data-label="12 思考">
+    <div class="ghost">12</div>
+    <header class="chap"><span class="no">12</span><span>課堂討論</span><span class="rule"></span><span>THINK</span></header>
+    <h2 class="ttl">留給你的<br><em>三個問題</em></h2>
+    <div class="vis">
+      <div class="q bx" data-b="1" style="top:0"><span class="n">1</span><p>和平抗議與暴力破壞，界線在哪裡？</p></div>
+      <div class="q bx" data-b="2" style="top:270px"><span class="n">2</span><p>政府如何同時維護秩序、回應訴求？</p></div>
+      <div class="q bx" data-b="3" style="top:540px"><span class="n">3</span><p>如果是你的學校，你會怎麼發聲？</p></div>
+      <div class="abs fd" data-b="4" style="left:80px;right:80px;top:840px;font:500 26px/1.6 var(--mono);color:var(--mute)">
+        資料來源：CNN、BBC、Al Jazeera、CNBC、Reuters、Wikipedia、美國駐法大使館<br>數字以法國內政部等官方統計為主 · 整理至 2026/10/25
+      </div>
+    </div>
+  </section>
+
+  <!-- caption + controls -->
+  <div id="cap" role="status" aria-live="polite"><div id="capText"></div></div>
+  <nav id="ctrl" aria-label="播放控制">
+    <button class="btn" id="bCC" aria-label="字幕開關" title="字幕"><svg viewBox="0 0 24 24"><path d="M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2zm2 5v4h4v-1.5H7.5v-1H10V10zm7 0v4h4v-1.5h-2.5v-1H21V10z"/></svg></button>
+    <button class="btn" id="bPrev" aria-label="上一頁" title="上一頁"><svg viewBox="0 0 24 24"><path d="M6 5h2v14H6zm3.5 7L19 5v14z"/></svg></button>
+    <button class="btn main" id="bPlay" aria-label="播放 / 暫停" title="播放 / 暫停"><svg viewBox="0 0 24 24"><path id="pIcon" d="M8 5v14l11-7z"/></svg></button>
+    <button class="btn" id="bNext" aria-label="下一頁" title="下一頁"><svg viewBox="0 0 24 24"><path d="M16 5h2v14h-2zM5 5l9.5 7L5 19z"/></svg></button>
+    <button class="btn" id="bMute" aria-label="語音開關" title="語音"><svg viewBox="0 0 24 24"><path id="mIcon" d="M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg></button>
+  </nav>
+
+  <!-- start overlay -->
+  <div class="ov" id="start">
+    <div class="tri" style="position:static"><i style="background:var(--bleu)"></i><i style="background:var(--paper)"></i><i style="background:var(--rouge)"></i></div>
+    <h1>法國<br><span>秋季風暴</span></h1>
+    <p>2026 學生抗議到全國暴動<br>約 4 分鐘 · 語音旁白 · 字幕</p>
+    <button class="bigplay" id="bStart" aria-label="開始播放"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+    <div class="mini">請開啟聲音 · 建議直式觀看</div>
+  </div>
+  <!-- end overlay -->
+  <div class="ov gone" id="end">
+    <h1 style="font-size:120px">播放<span>完畢</span></h1>
+    <p>重看一次，或從任一頁開始討論</p>
+    <div class="row2"><button class="pill pri" id="bReplay">從頭播放</button><button class="pill" id="bClose">停留本頁</button></div>
+  </div>
+</main>
+
+<script>
+/* ==========================================================
+   旁白逐字稿：每個字串 = 一次出現的字幕 + 一段語音
+   ["顯示文字","朗讀文字"] 用於英文或需要特別發音的片段
+   字幕與動畫同步：data-b="n" 的元素在第 n 句時出現
+   ========================================================== */
+const SLIDES = [
+  { c:[ "法國今年秋天，爆發近年最嚴重的社會動盪。",
+        "一場從高中校門口開始的抗議，",
+        "最後演變成全國數十萬人上街。",
+        "接下來幾分鐘，",
+        "帶你看懂這場事件的來龍去脈。" ] },
+  { c:[ "故事要從九月二十一日說起。",
+        "巴黎東南郊的克雷泰伊，",
+        "聖修伯里高中的學生走出教室，",
+        "抗議老師長期出缺、資源不足。",
+        "影片在社群上快速流傳，",
+        "短短幾天，周邊十幾所高中跟著封鎖。" ] },
+  { c:[ "學生的訴求其實很具體。",
+        "第一，老師和輔導人力嚴重不足，",
+        "有學生整整七個月沒有法語老師。",
+        "第二，一個班級擠進三十二到三十六人。",
+        "第三，校舍老舊，組合教室夏天高達四十度。",
+        ["第四，大學申請平台 Parcoursup 帶來沉重壓力。","第四，大學申請平台帶來沉重壓力。"] ] },
+  { c:[ "抗議像野火一樣蔓延。",
+        "九月底，約四百所高中受到干擾。",
+        "十月一日，大學生也加入封鎖，",
+        "單日超過一千所高中受影響，",
+        "將近兩千人被捕，多數是未成年人。",
+        "十月六日，工會和教師也一起上街。" ] },
+  { c:[ "為什麼一場校園抗議會越滾越大？",
+        "因為它碰上了另外兩股不滿。",
+        "一股是物價和油價不斷上漲，",
+        "曾經的黃背心運動因此重新集結；",
+        "另一股是工會反對公共支出緊縮。",
+        "三股力量，在十月十七日匯流。" ] },
+  { c:[ "十月十七日，全法約五十五萬人上街，",
+        "主辦單位則說有八十萬人。",
+        "多數遊行和平進行，",
+        "但巴黎共和廣場一帶爆發縱火與搶劫，",
+        "利摩日的歷史市政廳被燒毀，",
+        "里昂的旅遊局也遭人縱火。",
+        "一名示威者心臟驟停身亡，",
+        "南特一名員警也在另一起執勤中殉職。" ] },
+  { c:[ "用數字來看這一天的衝擊。",
+        "內政部統計，約兩千四百人被捕，",
+        "大約一千名警察受傷。",
+        "約一千五百間商店被毀或破壞，",
+        "還有三千間遭到洗劫。",
+        "到十月二十二日，已有兩百多人經快速審判入獄。" ] },
+  { c:[ "政府採取了兩手策略。",
+        "一手是維持秩序：",
+        "總統馬克宏發表全國談話，誓言追究破壞者，",
+        "巴黎、馬賽部分地區實施宵禁。",
+        "另一手是回應訴求：",
+        "總理勒科爾尼要求各部會提出改善方案，",
+        "教育部也開始派出三千名代課老師。" ] },
+  { c:[ "這場風暴也引發兩大爭議。",
+        "第一，警方執法是否過當？",
+        "人權團體批評過度用武，有少年因此重傷；",
+        "不過政府認為，部分抗議已經演變成暴動，",
+        "多數情況下的應對是適當的。",
+        "第二，誰在背後推動？",
+        "政府指控極左政黨煽動，對方強烈否認。",
+        "民調顯示，六成二民眾認為學生運動有正當理由。" ] },
+  { c:[ "十月二十四日，第二波大遊行登場。",
+        "政府在全國部署約七萬名警力。",
+        "內政部統計，全國約四十一萬人參與，",
+        "其中巴黎有十一萬人，",
+        "工會估計的人數則接近兩倍。",
+        "這一次，遊行大致和平落幕。" ] },
+  { c:[ "法國的學生運動，也影響了鄰國。",
+        "比利時列日的學生封鎖校園，",
+        "義大利多個城市出現學生遊行，",
+        "阿爾巴尼亞、希臘也有學生上街。",
+        "物價、教育，",
+        "和年輕人的未來，成了許多國家共同的焦慮。" ] },
+  { c:[ "最後，留給你三個思考題。",
+        "第一，和平抗議與暴力破壞，界線在哪裡？",
+        "第二，政府如何同時維護秩序、回應訴求？",
+        "第三，如果是你的學校，你會怎麼發聲？",
+        "事件仍在發展，記得持續關注可靠的新聞來源。" ],
+    onBeat(){} }
+];
+/* 第 8 頁天平：依旁白進度傾斜 */
+SLIDES[7].onBeat = (k, s) => {
+  const beam = s.querySelector('.beam');
+  const deg = k >= 6 ? 0 : k >= 4 ? -4 : k >= 2 ? -8 : 0;
+  beam.style.transform = `rotate(${deg}deg)`;
+};
+
+const RATE = 1.15;               // 語速：中等稍快
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const stage = $('#stage'), slides = $$('.slide'), capEl = $('#capText'), capBox = $('#cap');
+const synth = ('speechSynthesis' in window) ? window.speechSynthesis : null;
+const st = { i:0, k:0, playing:false, tok:0, timers:[], muted:false, cc:true, done:false };
+let voice = null, wakeLock = null;
+
+/* ---------- settings (per-viewer convenience) ---------- */
+try { st.muted = localStorage.getItem('fr26-muted') === '1'; st.cc = localStorage.getItem('fr26-cc') !== '0'; } catch(e){}
+const save = (k,v) => { try{ localStorage.setItem(k,v) }catch(e){} };
+
+/* ---------- fit 1080x1920 canvas to any screen ---------- */
+function fit(){ const s = Math.min(innerWidth/1080, innerHeight/1920); stage.style.setProperty('--s', s); }
+addEventListener('resize', fit); addEventListener('orientationchange', () => setTimeout(fit, 200)); fit();
+
+/* ---------- progress segments ---------- */
+const prog = $('#prog');
+prog.style.gridTemplateColumns = `repeat(${slides.length},1fr)`;
+slides.forEach(() => prog.insertAdjacentHTML('beforeend','<i><b></b></i>'));
+const segs = $$('#prog b');
+function updProg(){
+  const n = SLIDES[st.i].c.length;
+  segs.forEach((b,j) => b.style.transform = `scaleX(${j<st.i?1: j>st.i?0 : (st.k+1)/n})`);
+  $('#pageNo') && ($('#pageNo').textContent = `${String(st.i+1).padStart(2,'0')} / ${slides.length}`);
+}
+
+/* ---------- voice: default female zh-TW ---------- */
+function pickVoice(){
+  if (!synth) return;
+  const vs = synth.getVoices(); if (!vs.length) return;
+  const zh = vs.filter(v => /^zh|^cmn/i.test(v.lang) || /Chinese|中文|國語|普通話|普通话/i.test(v.name));
+  const tw = zh.filter(v => /TW|Hant/i.test(v.lang) || /Taiwan|台灣|臺灣/i.test(v.name));
+  const fem = /Mei-?Jia|美佳|Hsiao|曉|晓|Yating|雅婷|Female|女|Ting-?Ting|婷婷|Sin-?Ji|Xiaoxiao|Xiaoyi|Google 國語|Google 普通话/i;
+  const male = /Yunjhe|Zhiwei|Yunxi|Yunyang|Kangkang|Li-mu|Male|男/i;
+  voice = tw.find(v => fem.test(v.name)) || tw.find(v => !male.test(v.name)) ||
+          zh.find(v => fem.test(v.name)) || zh.find(v => !male.test(v.name)) || tw[0] || zh[0] || null;
+}
+if (synth){ pickVoice(); synth.onvoiceschanged = pickVoice; }
+
+/* ---------- helpers ---------- */
+function later(fn, ms){ const id = setTimeout(fn, ms); st.timers.push(id); return id; }
+function clearTimers(){ st.timers.forEach(clearTimeout); st.timers = []; }
+const chunk = (i,k) => { const c = SLIDES[i].c[k]; return Array.isArray(c) ? {t:c[0], s:c[1]} : {t:c, s:c}; };
+
+function runCount(el){
+  const to = +el.dataset.to, pre = el.dataset.pre || '', t0 = performance.now(), dur = 1500;
+  const tick = now => { const p = Math.min(1,(now-t0)/dur), e = 1-Math.pow(1-p,3);
+    el.textContent = pre + Math.round(to*e).toLocaleString('en-US'); if (p<1) requestAnimationFrame(tick); };
+  requestAnimationFrame(tick);
+}
+function resetSlide(s){
+  $$('[data-b]', s).forEach(e => e.classList.remove('in'));
+  $$('.count', s).forEach(e => e.textContent = (e.dataset.pre||'') + '0');
+}
+function applyBeat(k){
+  const s = slides[st.i];
+  $$('[data-b]', s).forEach(e => {
+    if (+e.dataset.b <= k && !e.classList.contains('in')){
+      e.classList.add('in');
+      [...(e.matches('.count') ? [e] : []), ...$$('.count', e).filter(c => !c.dataset.b)].forEach(runCount);
+    }
+  });
+  SLIDES[st.i].onBeat && SLIDES[st.i].onBeat(k, s);
+}
+function showCap(k){
+  capEl.classList.remove('show');
+  const t = chunk(st.i,k).t;
+  requestAnimationFrame(() => requestAnimationFrame(() => { capEl.textContent = t; capEl.classList.add('show'); }));
+}
+
+/* ---------- speech (one utterance per caption chunk = exact sync) ---------- */
+function speak(text, done){
+  let fired = false; const fin = () => { if (fired) return; fired = true; done(); };
+  const est = Math.max(1500, [...text].length * 235 / RATE);
+  if (!synth || st.muted){ later(fin, est); return; }
+  const u = new SpeechSynthesisUtterance(text);
+  if (voice){ u.voice = voice; u.lang = voice.lang; } else u.lang = 'zh-TW';
+  u.rate = RATE; u.pitch = 1.05; u.volume = 1;
+  u.onend = fin; u.onerror = fin;
+  if (synth.speaking || synth.pending) synth.cancel();
+  synth.speak(u);
+  later(fin, est * 2.6 + 2500);          // watchdog for browsers that never fire onend
+}
+
+/* ---------- playback engine ---------- */
+function goto(i){
+  clearTimers(); st.tok++; if (synth) synth.cancel();
+  i = Math.max(0, Math.min(slides.length-1, i));
+  const prev = slides[st.i];
+  slides.forEach(s => s.classList.remove('leave'));
+  if (prev !== slides[i]){
+    prev.classList.remove('active'); prev.classList.add('leave');
+    setTimeout(() => prev.classList.remove('leave'), 700);
+  }
+  const s = slides[i]; resetSlide(s); s.classList.remove('active');
+  st.i = i; st.k = 0; void s.offsetWidth; s.classList.add('active');
+  applyBeat(0); showCap(0); updProg();
+  if (st.playing) later(playChunk, 900);
+}
+function playChunk(){
+  const tok = ++st.tok, ch = chunk(st.i, st.k);
+  showCap(st.k); applyBeat(st.k); updProg();
+  speak(ch.s, () => { if (tok !== st.tok || !st.playing) return; advance(); });
+}
+function advance(){
+  const n = SLIDES[st.i].c.length;
+  if (st.k < n-1){ st.k++; later(playChunk, 160); }
+  else if (st.i < slides.length-1){ later(() => goto(st.i+1), 500); }
+  else finish();
+}
+function setPlayIcon(){ $('#pIcon').setAttribute('d', st.playing ? 'M6 5h4v14H6zm8 0h4v14h-4z' : 'M8 5v14l11-7z'); }
+async function lockScreen(on){
+  try{ if (on && 'wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+       else if (!on && wakeLock){ await wakeLock.release(); wakeLock = null; } }catch(e){}
+}
+function play(){
+  if (st.done){ restart(); return; }
+  st.playing = true; setPlayIcon(); lockScreen(true); playChunk();
+}
+function pause(){
+  st.playing = false; st.tok++; clearTimers(); if (synth) synth.cancel(); setPlayIcon(); lockScreen(false);
+}
+function finish(){
+  st.playing = false; st.done = true; setPlayIcon(); lockScreen(false);
+  later(() => $('#end').classList.remove('gone'), 900);
+}
+function restart(){
+  $('#end').classList.add('gone'); st.done = false; st.playing = true; setPlayIcon(); lockScreen(true); goto(0);
+}
+function primeSpeech(){
+  if (!synth) return; pickVoice();
+  const p = new SpeechSynthesisUtterance(' '); p.volume = 0; p.lang = 'zh-TW'; synth.speak(p);   // unlock audio inside the tap (iOS)
+}
+
+/* ---------- UI wiring ---------- */
+function applyToggles(){
+  capBox.classList.toggle('off', !st.cc); $('#bCC').classList.toggle('offs', !st.cc);
+  $('#bMute').classList.toggle('offs', st.muted);
+  $('#mIcon').setAttribute('d', st.muted
+    ? 'M3 9v6h4l5 5V4L7 9zm13.6 3 2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4z'
+    : 'M3 9v6h4l5 5V4L7 9zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z');
+}
+$('#bStart').addEventListener('click', () => {
+  primeSpeech(); $('#start').classList.add('gone');
+  st.playing = true; setPlayIcon(); lockScreen(true);
+  slides[0].classList.add('active'); st.i = 0; resetSlide(slides[0]); playChunk();
+});
+$('#bPlay').addEventListener('click', () => { st.playing ? pause() : (primeSpeech(), play()); });
+$('#bPrev').addEventListener('click', () => { st.done = false; goto(st.k > 1 ? st.i : st.i-1); });
+$('#bNext').addEventListener('click', () => { if (st.i < slides.length-1){ st.done=false; goto(st.i+1); } });
+$('#bCC').addEventListener('click', () => { st.cc = !st.cc; save('fr26-cc', st.cc?'1':'0'); applyToggles(); });
+$('#bMute').addEventListener('click', () => {
+  st.muted = !st.muted; save('fr26-muted', st.muted?'1':'0'); applyToggles();
+  if (st.playing){ pause(); play(); }   // restart current sentence in the new mode
+});
+$('#bReplay').addEventListener('click', () => { primeSpeech(); restart(); });
+$('#bClose').addEventListener('click', () => $('#end').classList.add('gone'));
+addEventListener('keydown', e => {
+  if ($('#start').classList.contains('gone') === false) { if (e.key===' '||e.key==='Enter'){ e.preventDefault(); $('#bStart').click(); } return; }
+  if (e.key===' '){ e.preventDefault(); $('#bPlay').click(); }
+  else if (e.key==='ArrowRight') $('#bNext').click();
+  else if (e.key==='ArrowLeft') goto(st.i-1);
+  else if (e.key.toLowerCase()==='c') $('#bCC').click();
+  else if (e.key.toLowerCase()==='m') $('#bMute').click();
+});
+/* swipe left/right on phone */
+let tx = null;
+stage.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, {passive:true});
+stage.addEventListener('touchend', e => {
+  if (tx === null || !$('#start').classList.contains('gone')) return;
+  const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if (Math.abs(dx) > 60) dx < 0 ? $('#bNext').click() : goto(st.i-1);
+}, {passive:true});
+document.addEventListener('visibilitychange', () => { if (document.hidden && st.playing) pause(); });
+
+applyToggles(); slides[0].classList.add('active'); applyBeat(0); updProg();
+
+/* ---------- PWA ---------- */
+if ('serviceWorker' in navigator && /^https?:/.test(location.protocol)){
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
